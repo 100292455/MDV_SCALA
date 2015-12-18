@@ -27,7 +27,7 @@ import org.jfree.chart.JFreeChart;
 
 public class Vista {
 	
-	Controlador gestor = new Controlador();
+	Controlador controlador = new Controlador();
 	JFrame frmControl;
 	private JTable table;
 	JFreeChart Grafica;
@@ -57,6 +57,11 @@ public class Vista {
 	ButtonGroup groupPalancaDeLuces;
 	
 	JButton btnConsultarHistorico;
+	
+	private String fecha;
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
 	
 	/*PanamaHitek_Arduino Arduino = new PanamaHitek_Arduino(); 
 	SerialPortEventListener evento= new SerialPortEventListener(){
@@ -223,38 +228,28 @@ public class Vista {
 				AbstractButton aButton = (AbstractButton) actionEvent.getSource();
 				
 				if(aButton.getText().equals("OFF")){
-				gestor.setLuces("0");
+				controlador.invocarArduinoManual("0");
 				
-				String luces =gestor.getLuces();
-				System.out.println(luces);
 				}
 				if(aButton.getText().equals("POSICION")){
 					//encender solo luces de posicion
-					gestor.setLuces("1");
+					controlador.invocarArduinoManual("1");
 
-					String luces =gestor.getLuces();
-					System.out.println(luces);
 				}
 				if(aButton.getText().equals("CRUCE")){
 					//encender luces de posicion y cortas
-					gestor.setLuces("2");
-
-					String luces =gestor.getLuces();
-					System.out.println(luces);
+					controlador.invocarArduinoManual("2");
+;
 				}
 				if(aButton.getText().equals("AUTOMATICO")){
 					//activar modo automatico
-					gestor.setLuces("4");
+					controlador.invocarArduinoAutomatico("4");
 
-					String luces =gestor.getLuces();
-					System.out.println(luces);
 				}
 				if(aButton.getText().equals("LARGAS")){
 					//encender luces de posicion y cortas y largas
-					gestor.setLuces("3");
+					controlador.invocarArduinoManual("3");
 
-					String luces =gestor.getLuces();
-					System.out.println(luces);
 				}
 			}
 		};
@@ -333,6 +328,7 @@ public class Vista {
 				"Fecha", "Hora", "Modo", "Lum", "Posicion", "Largas", "Cruce"
 			}
 		));
+		table.setValueAt(fecha, 0, 0);
 		scrollPane.setViewportView(table);
 		panelComportamientoSis.setLayout(null);
 		panelComportamientoSis.add(panel);

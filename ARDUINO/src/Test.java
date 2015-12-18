@@ -7,7 +7,6 @@ public class Test {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					
 					Vista window = new Vista();
 					window.frmControl.setVisible(true);
 					

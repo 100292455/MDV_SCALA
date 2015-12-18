@@ -10,7 +10,14 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 public class Controlador {
 
+	Historico historico = new Historico();
 	private String luces;
+	private String sensibilidad;
+	int sensibilidadTop;
+	int sensibilidadBot;
+	private String reaccion;
+	int treaccion;
+	
 
 	/***** DATOS ******/
 	int anyo;
@@ -43,12 +50,27 @@ public class Controlador {
 	public String getFecha() {
 		return fecha;
 	}
+	
+	public String getReaccion() {
+		return reaccion;
+	}
+	
+	public String getSensibilidad() {
+		return sensibilidad;
+	}
 
 	public void setLuces(String luces) {
 		this.luces = luces;
 	}
+	
+	public void setSensibilidad(String sensibilidad) {
+		this.sensibilidad = sensibilidad;
+	}
+	
+	public void setReaccion(String reaccion) {
+		this.reaccion = reaccion;
+	}
 
-	/******* LLAMAR AL ARDUINO Y ROLLOS *******/
 	public List<String> invocarArduinoManual(String lucesEncender){
 		List<String> datos = new ArrayList<String>();
 /*
@@ -77,7 +99,7 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";
+			luminosidad = "-";//valor recibido por el arduino
 			posicion = "OFF";
 			largas = "OFF";
 			cruce = "OFF";
@@ -99,7 +121,7 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";
+			luminosidad = "-";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "OFF";
@@ -121,7 +143,7 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";
+			luminosidad = "-";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "ON";
@@ -143,7 +165,7 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";
+			luminosidad = "-";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "ON";
 			cruce = "ON";
@@ -155,10 +177,42 @@ public class Controlador {
 			datos.add(cruce);
 			datos.add(largas);
 		}
+		historico.setVariablesToPlot(datos);
 		return datos;
 	}
 
-	public void invocarArduinoAutomatico(String lucesEncender){
+	public List<String> invocarArduinoAutomatico(String lucesEncender){
+		List<String> datos = new ArrayList<String>();
+		
+		/**
+		 * 1-. generar umbral a partir de la sensibilidad
+		 * 2-. preguntar al arduino por la luminosidad ambiente -> devolverá la luminosidad ambiente
+		 * 3-. decidir qué luz hay que encender -> enviar orden al arduino
+		 * 4-. enviar a la vista los datos correspondientes ...
+		 * 						- NOTA: la vista recibe los datos una vez se termina el método
+		 * 5-. llamar al método cada 'reacción' segundos -> empezar en 2-.
+		 */
+		/*
+		if (reaccion.equalsIgnoreCase("Alto")){
+			treaccion=1;
+		}else if (reaccion.equalsIgnoreCase("Medio")){
+			treaccion=2;
+		}else if (reaccion.equalsIgnoreCase("Bajo")){
+			treaccion=4;
+		}
+		
+		if (sensibilidad.equalsIgnoreCase("Alto")){
+			sensibilidadTop=1000;
+			sensibilidadBot=800;
+		}else if (sensibilidad.equalsIgnoreCase("Medio")){
+			sensibilidadTop=1000;
+			sensibilidadBot=800;
+		}else if (sensibilidad.equalsIgnoreCase("Bajo")){
+			sensibilidadTop=1000;
+			sensibilidadBot=800;
+		}
+		*/
+		
 /*
 		try {
 			Arduino.arduinoRXTX("COM3", 9600, evento);
@@ -174,8 +228,8 @@ public class Controlador {
 			e.printStackTrace();
 		}
 */
+		return datos;
 	}
 
-	/*** MODIFICAR LA INTERFAZ ****/
 
 }

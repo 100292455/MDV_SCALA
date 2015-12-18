@@ -9,6 +9,8 @@ import java.awt.Color;
 import javax.swing.border.EtchedBorder;
 
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractButton;
@@ -58,10 +60,7 @@ public class Vista {
 	
 	JButton btnConsultarHistorico;
 	
-	private String fecha;
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
+	List<String> datos = new ArrayList<String>() {{add("fecha");}};
 	
 	/*PanamaHitek_Arduino Arduino = new PanamaHitek_Arduino(); 
 	SerialPortEventListener evento= new SerialPortEventListener(){
@@ -223,23 +222,60 @@ public class Vista {
 		groupPalancaDeLuces.add(rdbtnAutomatico);
 		groupPalancaDeLuces.add(rdbtnLargas);
 		
+		JPanel panel = new JPanel();
+		panel.setBounds(23, 80, 345, 97);
+		panel.setBackground(Color.WHITE);
+		panel.setLayout(null);
+	
+		JLabel lblCompSisPos = new JLabel("");
+		lblCompSisPos.setBounds(25, 11, 75, 73);
+		panel.add(lblCompSisPos);
+		lblCompSisPos.setHorizontalAlignment(SwingConstants.LEFT);
+		lblCompSisPos.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-posicion-610x650.jpg")));
+		lblCompSisPos.setVisible(false);
+		JLabel lblCompSisCruce = new JLabel("");
+		lblCompSisCruce.setBounds(147, 14, 75, 70);
+		panel.add(lblCompSisCruce);
+		lblCompSisCruce.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-carretera-cortas.jpg")));
+		lblCompSisCruce.setVisible(false);
+		JLabel lblCompSisLargas = new JLabel("");
+		lblCompSisLargas.setBounds(248, 13, 75, 71);
+		panel.add(lblCompSisLargas);
+		lblCompSisLargas.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-carretera-largas.jpg")));
+		lblCompSisLargas.setVisible(false);
+		
 		ActionListener slice= new ActionListener(){
 			public void actionPerformed(ActionEvent actionEvent){
 				AbstractButton aButton = (AbstractButton) actionEvent.getSource();
 				
 				if(aButton.getText().equals("OFF")){
-				controlador.invocarArduinoManual("0");
-				
+					datos = controlador.invocarArduinoManual("0");
+					for (int i=0; i<7; i++){
+						table.setValueAt(datos.get(i), 0, i);
+					}
+					lblCompSisPos.setVisible(false);
+					lblCompSisCruce.setVisible(false);
+					lblCompSisLargas.setVisible(false);
 				}
 				if(aButton.getText().equals("POSICION")){
 					//encender solo luces de posicion
-					controlador.invocarArduinoManual("1");
-
+					datos = controlador.invocarArduinoManual("1");
+					for (int i=0; i<7; i++){
+						table.setValueAt(datos.get(i), 0, i);
+					}
+					lblCompSisPos.setVisible(true);
+					lblCompSisCruce.setVisible(false);
+					lblCompSisLargas.setVisible(false);
 				}
 				if(aButton.getText().equals("CRUCE")){
 					//encender luces de posicion y cortas
-					controlador.invocarArduinoManual("2");
-;
+					datos = controlador.invocarArduinoManual("2");
+					for (int i=0; i<7; i++){
+						table.setValueAt(datos.get(i), 0, i);
+					}
+					lblCompSisPos.setVisible(true);
+					lblCompSisCruce.setVisible(true);
+					lblCompSisLargas.setVisible(false);
 				}
 				if(aButton.getText().equals("AUTOMATICO")){
 					//activar modo automatico
@@ -248,8 +284,13 @@ public class Vista {
 				}
 				if(aButton.getText().equals("LARGAS")){
 					//encender luces de posicion y cortas y largas
-					controlador.invocarArduinoManual("3");
-
+					datos = controlador.invocarArduinoManual("3");
+					for (int i=0; i<7; i++){
+						table.setValueAt(datos.get(i), 0, i);
+					}
+					lblCompSisPos.setVisible(true);
+					lblCompSisCruce.setVisible(true);
+					lblCompSisLargas.setVisible(true);
 				}
 			}
 		};
@@ -298,37 +339,16 @@ public class Vista {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(23, 245, 345, 43);
 		
-		JPanel panel = new JPanel();
-		panel.setBounds(23, 80, 345, 97);
-		panel.setBackground(Color.WHITE);
-		panel.setLayout(null);
-		
-		JLabel lblCompSisPos = new JLabel("");
-		lblCompSisPos.setBounds(25, 11, 75, 73);
-		panel.add(lblCompSisPos);
-		lblCompSisPos.setHorizontalAlignment(SwingConstants.LEFT);
-		lblCompSisPos.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-posicion-610x650.jpg")));
-		
-		JLabel lblCompSisCruce = new JLabel("");
-		lblCompSisCruce.setBounds(147, 14, 75, 70);
-		panel.add(lblCompSisCruce);
-		lblCompSisCruce.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-carretera-cortas.jpg")));
-		
-		JLabel lblCompSisLargas = new JLabel("");
-		lblCompSisLargas.setBounds(248, 13, 75, 71);
-		panel.add(lblCompSisLargas);
-		lblCompSisLargas.setIcon(new ImageIcon(Vista.class.getResource("/Images/luces-carretera-largas.jpg")));
-
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null, null, null, null, null, null},
 			},
 			new String[] {
-				"Fecha", "Hora", "Modo", "Lum", "Posicion", "Largas", "Cruce"
+				"Fecha", "Hora", "Modo", "Lum", "Posicion", "Cruce", "Largas"
 			}
 		));
-		table.setValueAt(fecha, 0, 0);
+		
 		scrollPane.setViewportView(table);
 		panelComportamientoSis.setLayout(null);
 		panelComportamientoSis.add(panel);

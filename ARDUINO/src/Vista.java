@@ -1,9 +1,13 @@
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
+
 import java.awt.Color;
 
 import javax.swing.border.EtchedBorder;
@@ -19,13 +23,15 @@ import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
-
 import javax.swing.ImageIcon;
 
 import java.awt.Toolkit;
+
 import javax.swing.SwingConstants;
 
 import org.jfree.chart.JFreeChart;
+
+import com.panamahitek.PanamaHitek_Arduino;
 
 public class Vista {
 
@@ -33,6 +39,7 @@ public class Vista {
 	JFrame frmControl;
 	private JTable table;
 	JFreeChart Grafica;
+	DefaultTableModel model = new DefaultTableModel(0, 0);
 
 	JPanel panelConfg;
 	JLabel lblNewLabel;
@@ -48,7 +55,8 @@ public class Vista {
 	ButtonGroup groupTmpReacc;
 
 	JButton btnAplicar;
-
+	JButton btnConsultarHistorico;
+	
 	JPanel panelComportamientoSis;
 	JPanel panelCtrlLuces;
 	JLabel lblPalancaDeLuces;
@@ -59,7 +67,8 @@ public class Vista {
 	JRadioButton rdbtnLargas;
 	ButtonGroup groupPalancaDeLuces;
 
-	JButton btnConsultarHistorico;
+	public PanamaHitek_Arduino Arduino = new PanamaHitek_Arduino();
+
 
 	List<String> datos = new ArrayList<String>() {{add("fecha");}};
 
@@ -287,9 +296,11 @@ public class Vista {
 
 				if(aButton.getText().equals("OFF")){
 					datos = controlador.invocarArduinoManual("0");
-					for (int i=0; i<7; i++){
+					/*for (int i=0; i<7; i++){
 						table.setValueAt(datos.get(i), 0, i);
-					}
+					}*/
+					model.addRow(new Object[] { datos.get(0), datos.get(1), datos.get(2),
+							datos.get(3), datos.get(4), datos.get(5), datos.get(6)  });
 					lblCompSisPos.setVisible(false);
 					lblCompSisCruce.setVisible(false);
 					lblCompSisLargas.setVisible(false);
@@ -297,9 +308,12 @@ public class Vista {
 				if(aButton.getText().equals("POSICION")){
 					//encender solo luces de posicion
 					datos = controlador.invocarArduinoManual("1");
-					for (int i=0; i<7; i++){
-						table.setValueAt(datos.get(i), 0, i);
-					}
+					/*for (int i=0; i<7; i++){
+					table.setValueAt(datos.get(i), 0, i);
+				}*/
+					model.addRow(new Object[] { datos.get(0), datos.get(1), datos.get(2),
+							datos.get(3), datos.get(4), datos.get(5), datos.get(6)  });
+
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(false);
 					lblCompSisLargas.setVisible(false);
@@ -307,38 +321,85 @@ public class Vista {
 				if(aButton.getText().equals("CRUCE")){
 					//encender luces de posicion y cortas
 					datos = controlador.invocarArduinoManual("2");
-					for (int i=0; i<7; i++){
-						table.setValueAt(datos.get(i), 0, i);
-					}
+					/*for (int i=0; i<7; i++){
+					table.setValueAt(datos.get(i), 0, i);
+				}*/
+					model.addRow(new Object[] { datos.get(0), datos.get(1), datos.get(2),
+							datos.get(3), datos.get(4), datos.get(5), datos.get(6)  });
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(true);
 					lblCompSisLargas.setVisible(false);
 				}
 				int j =0;
 				if(aButton.getText().equals("AUTOMATICO")){
-					//activar modo automatico, cada x segundos
-					/*while(true){
-												
-						datos = controlador.invocarArduinoAutomatico("4");
-						for (int i=0; i<7; i++){
-							table.setValueAt(datos.get(i), 0, i);
+					//activar modo automatico, cada x segundos, los segundos los marcamos nososotros en Java
+					SerialPortEventListener evento =new SerialPortEventListener(){
+						public void serialEvent(SerialPortEvent spe){
+							if(Arduino.isMessageAvailable()== true){
+
+								datos = controlador.invocarArduinoAutomatico("4");
+								for (int i=0; i<7; i++){
+									table.setValueAt(datos.get(i), 0, i);
+								}
+
+								/**cortas y posicion encendidas**/
+								if(datos.get(5).equals("ON")){
+
+									lblCompSisPos.setVisible(true);
+									lblCompSisCruce.setVisible(true);
+									lblCompSisLargas.setVisible(false);
+
+									/*solo posicion encendidas*/
+								}else{
+									lblCompSisPos.setVisible(true);
+									lblCompSisCruce.setVisible(false);
+									lblCompSisLargas.setVisible(false);
+								}
+
+
+							}
+
+
+							if (controlador.getReaccion().equalsIgnoreCase("Alto")){
+								controlador.setReaccion("1");
+							}else if (controlador.getReaccion().equalsIgnoreCase("Medio")){
+								controlador.setReaccion("2");
+							}else if (controlador.getReaccion().equalsIgnoreCase("Bajo")){
+								controlador.setReaccion("4");
+							}
+
+							if(controlador.getReaccion().equalsIgnoreCase("1")){
+								try {
+									Thread.sleep (1000);
+								} catch (Exception e) {
+									// Mensaje en caso de que falle
+								}
+							}else if(controlador.getReaccion().equalsIgnoreCase("2")){
+								try {
+									Thread.sleep (2000);
+								} catch (Exception e) {
+									// Mensaje en caso de que falle
+								}
+							}else if(controlador.getReaccion().equalsIgnoreCase("4")){
+								try {
+									Thread.sleep (4000);
+								} catch (Exception e) {
+									// Mensaje en caso de que falle
+								}
+							}
 						}
-						System.out.println(j);
-						j++;
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}*/
+
+					};
 				}
+
 				if(aButton.getText().equals("LARGAS")){
 					//encender luces de posicion y cortas y largas
 					datos = controlador.invocarArduinoManual("3");
-					for (int i=0; i<7; i++){
-						table.setValueAt(datos.get(i), 0, i);
-					}
+					/*for (int i=0; i<7; i++){
+					table.setValueAt(datos.get(i), 0, i);
+				}*/
+					model.addRow(new Object[] { datos.get(0), datos.get(1), datos.get(2),
+							datos.get(3), datos.get(4), datos.get(5), datos.get(6) });
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(true);
 					lblCompSisLargas.setVisible(true);
@@ -371,33 +432,28 @@ public class Vista {
 		panelComportamientoSis.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Comportamiento del Sistema", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		frmControl.getContentPane().add(panelComportamientoSis);
 
-		btnConsultarHistorico = new JButton("Consultar Historico");
+		btnConsultarHistorico = new JButton("Consultar Grafica");
 		btnConsultarHistorico.setBounds(191, 403, 177, 23);
 		btnConsultarHistorico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/** Abrimos una ventana nueva despues de  pulsar el boton consultar historico**/
-				Historico dialog = new Historico();
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
+				//Historico dialog = new Historico();
+				//dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				//dialog.setVisible(true);
 			} /*lo elimino da error
 				catch (Exception e) {
 				e.printStackTrace();
 			}*/
 		});
-
-
+		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(23, 245, 345, 43);
+		scrollPane.setBounds(23, 200, 345, 200);
 
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, null, null, null, null},
-				},
-				new String[] {
-						"Fecha", "Hora", "Modo", "Lum", "Posicion", "Cruce", "Largas"
-				}
-				));
+		String header[] = new String[] { "Fecha", "Hora", "Modo", 
+				"Lum", "Posicion", "Cruce", "Largas" };
+		model.setColumnIdentifiers(header);
+		table.setModel(model);
 
 		scrollPane.setViewportView(table);
 		panelComportamientoSis.setLayout(null);

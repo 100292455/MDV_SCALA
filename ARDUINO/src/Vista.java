@@ -193,6 +193,9 @@ public class Vista {
 		btnAplicar.setBounds(134, 142, 88, 23);
 		btnAplicar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				/**llama a la incializacion del arduino solo para crearlo un vez tras pulsar el boton de aplicar*/
+				controlador.inicializarArduino();
 				panelCtrlLuces.setVisible(true);
 				panelComportamientoSis.setVisible(true);
 				btnAplicar.setEnabled(false);
@@ -296,7 +299,27 @@ public class Vista {
 				AbstractButton aButton = (AbstractButton) actionEvent.getSource();
 
 				if(aButton.getText().equals("OFF")){
-					datos = controlador.invocarArduinoManual("0");
+					//preguntamos por el valor LDR
+					try {
+						controlador.Arduino.sendData("5");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					int datoRecibido=0;
+
+					//guardamos el valor del ldr enviado por el arduino
+					try {
+						datoRecibido = controlador.Arduino.receiveData();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					System.out.println("recibo del arduino"+datoRecibido);
+
+					datos = controlador.invocarArduinoManual("0", datoRecibido);
 					/*for (int i=0; i<7; i++){
 						table.setValueAt(datos.get(i), 0, i);
 					}*/
@@ -330,7 +353,28 @@ public class Vista {
 				}
 				if(aButton.getText().equals("POSICION")){
 					//encender solo luces de posicion
-					datos = controlador.invocarArduinoManual("1");
+					//preguntamos por el valor LDR
+					try {
+						controlador.Arduino.sendData("5");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					int datoRecibido=0;
+
+					//guardamos el valor del ldr enviado por el arduino
+					try {
+						datoRecibido = controlador.Arduino.receiveData();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					System.out.println("recibo del arduino"+datoRecibido);
+
+
+					datos = controlador.invocarArduinoManual("1",datoRecibido);
 					/*for (int i=0; i<7; i++){
 					table.setValueAt(datos.get(i), 0, i);
 				}*/
@@ -365,7 +409,29 @@ public class Vista {
 				}
 				if(aButton.getText().equals("CRUCE")){
 					//encender luces de posicion y cortas
-					datos = controlador.invocarArduinoManual("2");
+					//preguntamos valor LDR
+					try {
+						controlador.Arduino.sendData("5");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					int datoRecibido=0;
+
+					//guardamos el valor del ldr enviado por el arduino
+					try {
+						datoRecibido = (controlador.Arduino.receiveData());
+						
+
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					System.out.println("recibo del arduino"+datoRecibido);
+
+					datos = controlador.invocarArduinoManual("2",datoRecibido);
 					/*for (int i=0; i<7; i++){
 					table.setValueAt(datos.get(i), 0, i);
 				}*/
@@ -400,23 +466,56 @@ public class Vista {
 				int j =0;
 				if(aButton.getText().equals("AUTOMATICO")){
 					//activar modo automatico, cada x segundos, los segundos los marcamos nososotros en Java
-					SerialPortEventListener evento =new SerialPortEventListener(){
-						public void serialEvent(SerialPortEvent spe){
-							if(Arduino.isMessageAvailable()== true){
 
-								datos = controlador.invocarArduinoAutomatico("4");
+					//System.out.println("estamos en modo automatico");
+
+					/*esperar a que el arduino mande un mensaje*/
+					//System.out.println("estoy esperando a que el arduino mande un mensaje");
+
+					//ActionListener taskPerformer = new ActionListener() {
+						//@Override
+						//public void actionPerformed(ActionEvent evt) {
+							try {
+								controlador.Arduino.sendData("5");
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+
+
+							int datoRecibido=0;
+
+							//guardamos el valor del ldr enviado por el arduino
+							try {
+								datoRecibido = controlador.Arduino.receiveData();
+								System.out.println("recibo del arduino"+Integer.toString(datoRecibido));
+								
+								datoRecibido=datoRecibido*4;
+								System.out.println("recibo del arduino real"+Integer.toString(datoRecibido));
+								
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+
+
+							//System.out.println(controlador.Arduino.isMessageAvailable());
+							//System.out.println("el mensaje del arduino es " + controlador.Arduino.printMessage());
+							if(datoRecibido!=-1){
+								//System.out.println("mensaje del arduino recibido");	
+								datos = controlador.invocarArduinoAutomatico("4", datoRecibido);
 								for (int i=0; i<7; i++){
 									table.setValueAt(datos.get(i), 0, i);
 								}
 
-								/**cortas y posicion encendidas**/
+								//cortas y posicion encendidas
 								if(datos.get(5).equals("ON")){
 
 									lblCompSisPos.setVisible(true);
 									lblCompSisCruce.setVisible(true);
 									lblCompSisLargas.setVisible(false);
 
-									/*solo posicion encendidas*/
+									//solo posicion encendidas
 								}else{
 									lblCompSisPos.setVisible(true);
 									lblCompSisCruce.setVisible(false);
@@ -425,43 +524,59 @@ public class Vista {
 
 
 							}
+						//}
+					//};
+					/*if (controlador.getReaccion().equalsIgnoreCase("Alto")){
+						controlador.setReaccion("4");
+					}else if (controlador.getReaccion().equalsIgnoreCase("Medio")){
+						controlador.setReaccion("2");
+					}else if (controlador.getReaccion().equalsIgnoreCase("Bajo")){
+						controlador.setReaccion("1");
+					}
 
-
-							if (controlador.getReaccion().equalsIgnoreCase("Alto")){
-								controlador.setReaccion("1");
-							}else if (controlador.getReaccion().equalsIgnoreCase("Medio")){
-								controlador.setReaccion("2");
-							}else if (controlador.getReaccion().equalsIgnoreCase("Bajo")){
-								controlador.setReaccion("4");
-							}
-
-							if(controlador.getReaccion().equalsIgnoreCase("1")){
-								try {
-									Thread.sleep (1000);
-								} catch (Exception e) {
-									// Mensaje en caso de que falle
-								}
-							}else if(controlador.getReaccion().equalsIgnoreCase("2")){
-								try {
-									Thread.sleep (2000);
-								} catch (Exception e) {
-									// Mensaje en caso de que falle
-								}
-							}else if(controlador.getReaccion().equalsIgnoreCase("4")){
-								try {
-									Thread.sleep (4000);
-								} catch (Exception e) {
-									// Mensaje en caso de que falle
-								}
-							}
+					if(controlador.getReaccion().equalsIgnoreCase("4")){
+						try {
+							Thread.sleep (4000);
+						} catch (Exception e) {
+							// Mensaje en caso de que falle
 						}
-
-					};
+					}else if(controlador.getReaccion().equalsIgnoreCase("2")){
+						try {
+							Thread.sleep (2000);
+						} catch (Exception e) {
+							// Mensaje en caso de que falle
+						}
+					}else if(controlador.getReaccion().equalsIgnoreCase("1")){
+						try {
+							Thread.sleep (1000);
+						} catch (Exception e) {
+							// Mensaje en caso de que falle
+						}
+					}
+					 */
 				}
 
 				if(aButton.getText().equals("LARGAS")){
-					//encender luces de posicion y cortas y largas
-					datos = controlador.invocarArduinoManual("3");
+					try {
+						controlador.Arduino.sendData("5");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					int datoRecibido=0;
+
+					//guardamos el valor del ldr enviado por el arduino
+					try {
+						datoRecibido = controlador.Arduino.receiveData();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					System.out.println("recibo del arduino"+datoRecibido);
+
+					datos = controlador.invocarArduinoManual("3", datoRecibido);
 					/*for (int i=0; i<7; i++){
 					table.setValueAt(datos.get(i), 0, i);
 				}*/

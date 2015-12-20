@@ -73,9 +73,28 @@ public class Controlador {
 		this.reaccion = reaccion;
 	}
 
-	public List<String> invocarArduinoManual(String lucesEncender){
+	public void inicializarArduino(){
+
+		Arduino = new PanamaHitek_Arduino();
+		SerialPortEventListener evento= new SerialPortEventListener(){
+			@Override
+			public void serialEvent(SerialPortEvent spe){
+			}
+		};
+
+
+
+		try {
+			Arduino.arduinoRXTX("COM3", 9600, evento);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public List<String> invocarArduinoManual(String lucesEncender, int luminosidad){
 		List<String> datos = new ArrayList<String>();
-		
+
 		if (sensibilidad.equalsIgnoreCase("Alto")){
 			sensibilidadTop=800;
 			sensibilidadBot=750;
@@ -86,7 +105,7 @@ public class Controlador {
 			sensibilidadTop=300;
 			sensibilidadBot=250;
 		}
-		
+
 		/*
 		try {
 			Arduino.arduinoRXTX("COM3", 9600, evento);
@@ -115,14 +134,14 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "10";//valor recibido por el arduino
+			this.luminosidad = Integer.toString(luminosidad);//valor recibido por el arduino
 			posicion = "OFF";
 			largas = "OFF";
 			cruce = "OFF";
 			datos.add(fecha);
 			datos.add(hora);
 			datos.add(modo);
-			datos.add(luminosidad);
+			datos.add(this.luminosidad);
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
@@ -135,7 +154,15 @@ public class Controlador {
 			datos.add(mili);
 			datos.add(Integer.toString(sensibilidadTop));
 			datos.add(Integer.toString(sensibilidadBot));
-			
+
+			/* enviamos señal de todas apagadas al arduino */
+			try {
+				Arduino.sendData("0");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 		if(lucesEncender.equals("1")){
 			Calendar calendario = Calendar.getInstance();
@@ -150,14 +177,14 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "20";//valor recibido por el arduino
+			this.luminosidad = Integer.toString(luminosidad);//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "OFF";
 			datos.add(fecha);
 			datos.add(hora);
 			datos.add(modo);
-			datos.add(luminosidad);
+			datos.add(this.luminosidad);
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
@@ -170,6 +197,14 @@ public class Controlador {
 			datos.add(mili);
 			datos.add(Integer.toString(sensibilidadTop));
 			datos.add(Integer.toString(sensibilidadBot));
+
+			/* enviamos señal de posicion ON al arduino */
+			try {
+				Arduino.sendData("1");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(lucesEncender.equals("2")){
 			Calendar calendario = Calendar.getInstance();
@@ -184,14 +219,14 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "30";//valor recibido por el arduino
+			this.luminosidad = Integer.toString(luminosidad);//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "ON";
 			datos.add(fecha);
 			datos.add(hora);
 			datos.add(modo);
-			datos.add(luminosidad);
+			datos.add(this.luminosidad);
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
@@ -204,6 +239,14 @@ public class Controlador {
 			datos.add(mili);
 			datos.add(Integer.toString(sensibilidadTop));
 			datos.add(Integer.toString(sensibilidadBot));
+
+			/* enviamos señal de cruce y posicion ON al arduino */
+			try {
+				Arduino.sendData("2");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(lucesEncender.equals("3")){
 			Calendar calendario = Calendar.getInstance();
@@ -218,14 +261,14 @@ public class Controlador {
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "40";//valor recibido por el arduino
+			this.luminosidad = Integer.toString(luminosidad);//valor recibido por el arduino
 			posicion = "ON";
 			largas = "ON";
 			cruce = "ON";
 			datos.add(fecha);
 			datos.add(hora);
 			datos.add(modo);
-			datos.add(luminosidad);
+			datos.add(this.luminosidad);
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
@@ -238,11 +281,19 @@ public class Controlador {
 			datos.add(mili);
 			datos.add(Integer.toString(sensibilidadTop));
 			datos.add(Integer.toString(sensibilidadBot));
+
+			/* enviamos señal de todas encendidas al arduino */
+			try {
+				Arduino.sendData("3");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return datos;
 	}
 
-	public List<String> invocarArduinoAutomatico(String lucesEncender){
+	public List<String> invocarArduinoAutomatico(String lucesEncender, int luminosidad){
 		List<String> datos = new ArrayList<String>();
 
 		Calendar calendario = Calendar.getInstance();
@@ -294,27 +345,57 @@ public class Controlador {
 			sensibilidadBot=250;
 		}
 
-		if(luminosidadArduino >= sensibilidadTop){
+		/*caso mayor umbral de apagado*/
+		if(luminosidad >= sensibilidadTop){
+
+			System.out.println("pos y cruce encendidas");
+
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "ON";
-		}
-		else if(luminosidadArduino >= sensibilidadTop && luminosidadArduino < sensibilidadBot){
+
+			try {
+				Arduino.sendData("8");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}/*caso con sensibilidad entre umbral de apagado y encendido*/
+		else if(luminosidad >= sensibilidadTop && luminosidad < sensibilidadBot){
+
+			System.out.println("pos y cruce encendida");
+
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "ON";
-		}
-		else if(luminosidadArduino <= sensibilidadBot){
+
+			try {
+				Arduino.sendData("8");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}/*caso con por debajo de umbral encendido*/
+		else if(luminosidad <= sensibilidadBot){
+
+			System.out.println("sensibilidad pos encendida");
+
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "OFF";
+
+			try {
+				Arduino.sendData("4");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		
+
 		datos.add(fecha);
 		datos.add(hora);
 		datos.add(modo);
-		datos.add(Integer.toString(luminosidadArduino));
+		datos.add(Integer.toString(luminosidad));
 		datos.add(posicion);
 		datos.add(cruce);
 		datos.add(largas);

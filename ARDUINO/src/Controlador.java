@@ -22,12 +22,13 @@ public class Controlador {
 
 
 	/***** DATOS ******/
-	int anyo;
-	int dia;
-	int mes;
-	int horas ;
-	int minutos ;
-	int segundos ;
+	String anyo;
+	String dia;
+	String mes;
+	String horas ;
+	String minutos ;
+	String segundos ;
+	String mili;
 	private String fecha;
 	private String hora;
 	private String modo;
@@ -74,6 +75,18 @@ public class Controlador {
 
 	public List<String> invocarArduinoManual(String lucesEncender){
 		List<String> datos = new ArrayList<String>();
+		
+		if (sensibilidad.equalsIgnoreCase("Alto")){
+			sensibilidadTop=800;
+			sensibilidadBot=750;
+		}else if (sensibilidad.equalsIgnoreCase("Medio")){
+			sensibilidadTop=500;
+			sensibilidadBot=450;
+		}else if (sensibilidad.equalsIgnoreCase("Bajo")){
+			sensibilidadTop=300;
+			sensibilidadBot=250;
+		}
+		
 		/*
 		try {
 			Arduino.arduinoRXTX("COM3", 9600, evento);
@@ -92,16 +105,17 @@ public class Controlador {
 		if(lucesEncender.equals("0")){
 			Calendar calendario = Calendar.getInstance();
 
-			anyo = calendario.get(Calendar.YEAR);
-			dia = calendario.get(Calendar.DAY_OF_MONTH);
-			mes = calendario.get(Calendar.MONTH) +1;
-			horas = calendario.get(Calendar.HOUR_OF_DAY) ;
-			minutos = calendario.get(Calendar.MINUTE);
-			segundos = calendario.get(Calendar.SECOND);
+			anyo = Integer.toString(calendario.get(Calendar.YEAR));
+			dia = Integer.toString(calendario.get(Calendar.DAY_OF_MONTH));
+			mes = Integer.toString(calendario.get(Calendar.MONTH)+1);
+			horas = Integer.toString(calendario.get(Calendar.HOUR_OF_DAY)) ;
+			minutos = Integer.toString(calendario.get(Calendar.MINUTE));
+			segundos = Integer.toString(calendario.get(Calendar.SECOND));
+			mili = Integer.toString(calendario.get(Calendar.MILLISECOND));
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";//valor recibido por el arduino
+			luminosidad = "10";//valor recibido por el arduino
 			posicion = "OFF";
 			largas = "OFF";
 			cruce = "OFF";
@@ -112,20 +126,31 @@ public class Controlador {
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
+			datos.add(anyo);
+			datos.add(mes);
+			datos.add(dia);
+			datos.add(horas);
+			datos.add(minutos);
+			datos.add(segundos);
+			datos.add(mili);
+			datos.add(Integer.toString(sensibilidadTop));
+			datos.add(Integer.toString(sensibilidadBot));
+			
 		}
 		if(lucesEncender.equals("1")){
 			Calendar calendario = Calendar.getInstance();
 
-			anyo = calendario.get(Calendar.YEAR);
-			dia = calendario.get(Calendar.DAY_OF_MONTH);
-			mes = calendario.get(Calendar.MONTH) +1;
-			horas = calendario.get(Calendar.HOUR_OF_DAY) ;
-			minutos = calendario.get(Calendar.MINUTE);
-			segundos = calendario.get(Calendar.SECOND);
+			anyo = Integer.toString(calendario.get(Calendar.YEAR));
+			dia = Integer.toString(calendario.get(Calendar.DAY_OF_MONTH));
+			mes = Integer.toString(calendario.get(Calendar.MONTH)+1);
+			horas = Integer.toString(calendario.get(Calendar.HOUR_OF_DAY)) ;
+			minutos = Integer.toString(calendario.get(Calendar.MINUTE));
+			segundos = Integer.toString(calendario.get(Calendar.SECOND));
+			mili = Integer.toString(calendario.get(Calendar.MILLISECOND));
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";//valor recibido por el arduino
+			luminosidad = "20";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "OFF";
@@ -136,20 +161,30 @@ public class Controlador {
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
+			datos.add(anyo);
+			datos.add(mes);
+			datos.add(dia);
+			datos.add(horas);
+			datos.add(minutos);
+			datos.add(segundos);
+			datos.add(mili);
+			datos.add(Integer.toString(sensibilidadTop));
+			datos.add(Integer.toString(sensibilidadBot));
 		}
 		if(lucesEncender.equals("2")){
 			Calendar calendario = Calendar.getInstance();
 
-			anyo = calendario.get(Calendar.YEAR);
-			dia = calendario.get(Calendar.DAY_OF_MONTH);
-			mes = calendario.get(Calendar.MONTH) +1;
-			horas = calendario.get(Calendar.HOUR_OF_DAY) ;
-			minutos = calendario.get(Calendar.MINUTE);
-			segundos = calendario.get(Calendar.SECOND);
+			anyo = Integer.toString(calendario.get(Calendar.YEAR));
+			dia = Integer.toString(calendario.get(Calendar.DAY_OF_MONTH));
+			mes = Integer.toString(calendario.get(Calendar.MONTH)+1) ;
+			horas = Integer.toString(calendario.get(Calendar.HOUR_OF_DAY)) ;
+			minutos = Integer.toString(calendario.get(Calendar.MINUTE));
+			segundos = Integer.toString(calendario.get(Calendar.SECOND));
+			mili = Integer.toString(calendario.get(Calendar.MILLISECOND));
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";//valor recibido por el arduino
+			luminosidad = "30";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "OFF";
 			cruce = "ON";
@@ -160,20 +195,30 @@ public class Controlador {
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
+			datos.add(anyo);
+			datos.add(mes);
+			datos.add(dia);
+			datos.add(horas);
+			datos.add(minutos);
+			datos.add(segundos);
+			datos.add(mili);
+			datos.add(Integer.toString(sensibilidadTop));
+			datos.add(Integer.toString(sensibilidadBot));
 		}
 		if(lucesEncender.equals("3")){
 			Calendar calendario = Calendar.getInstance();
 
-			anyo = calendario.get(Calendar.YEAR);
-			dia = calendario.get(Calendar.DAY_OF_MONTH);
-			mes = calendario.get(Calendar.MONTH) +1;
-			horas = calendario.get(Calendar.HOUR_OF_DAY) ;
-			minutos = calendario.get(Calendar.MINUTE);
-			segundos = calendario.get(Calendar.SECOND);
+			anyo = Integer.toString(calendario.get(Calendar.YEAR));
+			dia = Integer.toString(calendario.get(Calendar.DAY_OF_MONTH));
+			mes = Integer.toString(calendario.get(Calendar.MONTH)+1) ;
+			horas = Integer.toString(calendario.get(Calendar.HOUR_OF_DAY)) ;
+			minutos = Integer.toString(calendario.get(Calendar.MINUTE));
+			segundos = Integer.toString(calendario.get(Calendar.SECOND));
+			mili = Integer.toString(calendario.get(Calendar.MILLISECOND));
 			fecha = anyo+"/"+mes+"/"+dia;
 			hora = horas+":"+minutos+":"+segundos;
 			modo = "MANUAL";
-			luminosidad = "-";//valor recibido por el arduino
+			luminosidad = "40";//valor recibido por el arduino
 			posicion = "ON";
 			largas = "ON";
 			cruce = "ON";
@@ -184,6 +229,15 @@ public class Controlador {
 			datos.add(posicion);
 			datos.add(cruce);
 			datos.add(largas);
+			datos.add(anyo);
+			datos.add(mes);
+			datos.add(dia);
+			datos.add(horas);
+			datos.add(minutos);
+			datos.add(segundos);
+			datos.add(mili);
+			datos.add(Integer.toString(sensibilidadTop));
+			datos.add(Integer.toString(sensibilidadBot));
 		}
 		return datos;
 	}
@@ -193,12 +247,13 @@ public class Controlador {
 
 		Calendar calendario = Calendar.getInstance();
 
-		anyo = calendario.get(Calendar.YEAR);
-		dia = calendario.get(Calendar.DAY_OF_MONTH);
-		mes = calendario.get(Calendar.MONTH) +1;
-		horas = calendario.get(Calendar.HOUR_OF_DAY) ;
-		minutos = calendario.get(Calendar.MINUTE);
-		segundos = calendario.get(Calendar.SECOND);
+		anyo = Integer.toString(calendario.get(Calendar.YEAR));
+		dia = Integer.toString(calendario.get(Calendar.DAY_OF_MONTH));
+		mes = Integer.toString(calendario.get(Calendar.MONTH)+1);
+		horas = Integer.toString(calendario.get(Calendar.HOUR_OF_DAY)) ;
+		minutos = Integer.toString(calendario.get(Calendar.MINUTE));
+		segundos = Integer.toString(calendario.get(Calendar.SECOND));
+		mili = Integer.toString(calendario.get(Calendar.MILLISECOND));
 		fecha = anyo+"/"+mes+"/"+dia;
 		hora = horas+":"+minutos+":"+segundos;
 		modo = "AUTOMATICO";
@@ -263,6 +318,15 @@ public class Controlador {
 		datos.add(posicion);
 		datos.add(cruce);
 		datos.add(largas);
+		datos.add(anyo);
+		datos.add(mes);
+		datos.add(dia);
+		datos.add(horas);
+		datos.add(minutos);
+		datos.add(segundos);
+		datos.add(mili);
+		datos.add(Integer.toString(sensibilidadTop));
+		datos.add(Integer.toString(sensibilidadBot));
 
 		/*
 		try {

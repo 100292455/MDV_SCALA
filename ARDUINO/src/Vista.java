@@ -1,3 +1,4 @@
+
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
@@ -56,7 +57,7 @@ public class Vista {
 
 	JButton btnAplicar;
 	JButton btnConsultarHistorico;
-	
+
 	JPanel panelComportamientoSis;
 	JPanel panelCtrlLuces;
 	JLabel lblPalancaDeLuces;
@@ -96,7 +97,7 @@ public class Vista {
 
 	}
 
-
+	List<Coordenadas> coordenadas = new ArrayList();
 
 	/**
 	 * Initialize the contents of the frame.
@@ -304,6 +305,28 @@ public class Vista {
 					lblCompSisPos.setVisible(false);
 					lblCompSisCruce.setVisible(false);
 					lblCompSisLargas.setVisible(false);
+					Coordenadas coord = new Coordenadas();
+
+					int ano = Integer.parseInt(datos.get(7));
+					int mes = Integer.parseInt(datos.get(8));
+					int dia = Integer.parseInt(datos.get(9));
+					int horas = Integer.parseInt(datos.get(10)); 
+					int minutos = Integer.parseInt(datos.get(11));
+					int segundos = Integer.parseInt(datos.get(12));
+
+					double sensibilidadTop = Double.parseDouble(datos.get(14));
+					double sensibilidadBot = Double.parseDouble(datos.get(15));
+
+					coord.setAno(ano);
+					coord.setDia(dia);
+					coord.setHora(horas);
+					coord.setMes(mes);
+					coord.setMinutos(minutos);
+					coord.setSegundos(segundos);
+					coord.setLuminosidad(datos.get(3));
+					coord.setUmbralSuperior(sensibilidadTop);
+					coord.setUmbralInferior(sensibilidadBot);
+					coordenadas.add(coord);					
 				}
 				if(aButton.getText().equals("POSICION")){
 					//encender solo luces de posicion
@@ -317,6 +340,28 @@ public class Vista {
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(false);
 					lblCompSisLargas.setVisible(false);
+					Coordenadas coord = new Coordenadas();
+
+					int ano = Integer.parseInt(datos.get(7));
+					int mes = Integer.parseInt(datos.get(8));
+					int dia = Integer.parseInt(datos.get(9));
+					int horas = Integer.parseInt(datos.get(10)); 
+					int minutos = Integer.parseInt(datos.get(11));
+					int segundos = Integer.parseInt(datos.get(12));
+
+					double sensibilidadTop = Double.parseDouble(datos.get(14));
+					double sensibilidadBot = Double.parseDouble(datos.get(15));
+
+					coord.setAno(ano);
+					coord.setDia(dia);
+					coord.setHora(horas);
+					coord.setMes(mes);
+					coord.setMinutos(minutos);
+					coord.setSegundos(segundos);
+					coord.setLuminosidad(datos.get(3));
+					coord.setUmbralSuperior(sensibilidadTop);
+					coord.setUmbralInferior(sensibilidadBot);
+					coordenadas.add(coord);		
 				}
 				if(aButton.getText().equals("CRUCE")){
 					//encender luces de posicion y cortas
@@ -329,6 +374,28 @@ public class Vista {
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(true);
 					lblCompSisLargas.setVisible(false);
+					Coordenadas coord = new Coordenadas();
+
+					int ano = Integer.parseInt(datos.get(7));
+					int mes = Integer.parseInt(datos.get(8));
+					int dia = Integer.parseInt(datos.get(9));
+					int horas = Integer.parseInt(datos.get(10)); 
+					int minutos = Integer.parseInt(datos.get(11));
+					int segundos = Integer.parseInt(datos.get(12));
+
+					double sensibilidadTop = Double.parseDouble(datos.get(14));
+					double sensibilidadBot = Double.parseDouble(datos.get(15));
+
+					coord.setAno(ano);
+					coord.setDia(dia);
+					coord.setHora(horas);
+					coord.setMes(mes);
+					coord.setMinutos(minutos);
+					coord.setSegundos(segundos);
+					coord.setLuminosidad(datos.get(3));
+					coord.setUmbralSuperior(sensibilidadTop);
+					coord.setUmbralInferior(sensibilidadBot);
+					coordenadas.add(coord);		
 				}
 				int j =0;
 				if(aButton.getText().equals("AUTOMATICO")){
@@ -403,6 +470,30 @@ public class Vista {
 					lblCompSisPos.setVisible(true);
 					lblCompSisCruce.setVisible(true);
 					lblCompSisLargas.setVisible(true);
+					Coordenadas coord = new Coordenadas();
+
+					int ano = Integer.parseInt(datos.get(7));
+					int mes = Integer.parseInt(datos.get(8));
+					int dia = Integer.parseInt(datos.get(9));
+					int horas = Integer.parseInt(datos.get(10)); 
+					int minutos = Integer.parseInt(datos.get(11));
+					int segundos = Integer.parseInt(datos.get(12));
+					int mili = Integer.parseInt(datos.get(13));
+
+					double sensibilidadTop = Double.parseDouble(datos.get(14));
+					double sensibilidadBot = Double.parseDouble(datos.get(15));
+
+					coord.setAno(ano);
+					coord.setDia(dia);
+					coord.setHora(horas);
+					coord.setMes(mes);
+					coord.setMinutos(minutos);
+					coord.setSegundos(segundos);
+					coord.setMili(mili);
+					coord.setUmbralSuperior(sensibilidadTop);
+					coord.setUmbralInferior(sensibilidadBot);
+					coord.setLuminosidad(datos.get(3));
+					coordenadas.add(coord);		
 				}
 			}
 		};
@@ -436,16 +527,13 @@ public class Vista {
 		btnConsultarHistorico.setBounds(191, 403, 177, 23);
 		btnConsultarHistorico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				/** Abrimos una ventana nueva despues de  pulsar el boton consultar historico**/
-				//Historico dialog = new Historico();
-				//dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				//dialog.setVisible(true);
-			} /*lo elimino da error
-				catch (Exception e) {
-				e.printStackTrace();
-			}*/
+				if(coordenadas.isEmpty()) {
+				}else{
+					new GraficaTest(coordenadas);
+				}
+			} 
 		});
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(23, 200, 345, 200);
 

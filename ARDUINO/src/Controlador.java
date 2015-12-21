@@ -326,13 +326,6 @@ public class Controlador {
 		treaccion=4;
 	}*/
 
-		int luminosidadArduino=0;
-		try {
-			luminosidadArduino= Arduino.receiveData();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		if (sensibilidad.equalsIgnoreCase("Alto")){
 			sensibilidadTop=800;
@@ -348,22 +341,18 @@ public class Controlador {
 		/*caso mayor umbral de apagado*/
 		if(luminosidad >= sensibilidadTop){
 
-			System.out.println("pos y cruce encendidas");
-
 			posicion = "ON";
 			largas = "OFF";
-			cruce = "ON";
+			cruce = "OFF";
 
 			try {
-				Arduino.sendData("8");
+				Arduino.sendData("4");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}/*caso con sensibilidad entre umbral de apagado y encendido*/
-		else if(luminosidad >= sensibilidadTop && luminosidad < sensibilidadBot){
-
-			System.out.println("pos y cruce encendida");
+		else if(luminosidad < sensibilidadTop && luminosidad > sensibilidadBot){
 
 			posicion = "ON";
 			largas = "OFF";
@@ -378,14 +367,12 @@ public class Controlador {
 		}/*caso con por debajo de umbral encendido*/
 		else if(luminosidad <= sensibilidadBot){
 
-			System.out.println("sensibilidad pos encendida");
-
 			posicion = "ON";
 			largas = "OFF";
-			cruce = "OFF";
+			cruce = "ON";
 
 			try {
-				Arduino.sendData("4");
+				Arduino.sendData("8");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
